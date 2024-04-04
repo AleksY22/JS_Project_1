@@ -239,12 +239,14 @@ window.addEventListener('DOMContentLoaded', () => {
 
          form.insertAdjacentElement('afterend', statusMessage);
 
-         const request = new XMLHttpRequest();
-         request.open('POST', 'server.php');
-         request.setRequestHeader('Content-type', 'application/json');
+         //const request = new XMLHttpRequest();
+
+         //request.open('POST', 'server.php');
+         //request.setRequestHeader('Content-type', 'application/json');
 
          //отправка объекта formdata
          const formData = new FormData(form);
+
 
          //отправка json
          const objectSend = {};
@@ -252,11 +254,31 @@ window.addEventListener('DOMContentLoaded', () => {
          formData.forEach(function (value, key) {
             objectSend[key] = value;
          });
+         //const json = JSON.stringify(objectSend);
+         //request.send(json);
 
-         const json = JSON.stringify(objectSend);
 
-         request.send(json);
 
+         fetch('server.php', {
+            method: 'POST',
+            headers: {
+               'Content-type': 'application/json'
+            },
+            body: JSON.stringify(objectSend)
+         })
+            .then(data => data.text())
+            .then(data => {
+               console.log(data);
+               showThanksModal(message.success);
+               form.reset();
+               statusMessage.remove();
+            }).catch(() => {
+               showThanksModal(message.failure);
+            }).finally(() => {
+               form.reset();
+            });
+
+         /*
          //ответ от сервера
          request.addEventListener('load', () => {
             if (request.status === 200) {
@@ -268,7 +290,7 @@ window.addEventListener('DOMContentLoaded', () => {
                showThanksModal(message.failure);
             }
          });
-
+         */
       });
    }
 
