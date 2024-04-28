@@ -385,6 +385,10 @@ window.addEventListener('DOMContentLoaded', () => {
       dots[slideIndex - 1].style.opacity = '1';
    }
 
+   function delNotDigits(str) {
+      return +str.replace(/\D/g, '');
+   }
+
    showCountSlides();
 
    slidesField.style.width = 100 * slides.length + '%';
@@ -417,10 +421,10 @@ window.addEventListener('DOMContentLoaded', () => {
    }
 
    btnNext.addEventListener('click', () => {
-      if (offset == +widthSlide.slice(0, widthSlide.length - 2) * (slides.length - 1)) {
+      if (offset == delNotDigits(widthSlide) * (slides.length - 1)) {
          offset = 0;
       } else {
-         offset += +widthSlide.slice(0, widthSlide.length - 2);
+         offset += delNotDigits(widthSlide);
       }
       slidesField.style.transform = `translateX(-${offset}px)`;
 
@@ -438,9 +442,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
    btnPrev.addEventListener('click', () => {
       if (offset == 0) {
-         offset = +widthSlide.slice(0, widthSlide.length - 2) * (slides.length - 1);
+         offset = delNotDigits(widthSlide) * (slides.length - 1);
       } else {
-         offset -= +widthSlide.slice(0, widthSlide.length - 2);
+         offset -= delNotDigits(widthSlide);
       }
       slidesField.style.transform = `translateX(-${offset}px)`;
 
@@ -460,7 +464,7 @@ window.addEventListener('DOMContentLoaded', () => {
          const slideTo = e.target.getAttribute('data-slide-to');
          slideIndex = slideTo;
 
-         offset = +widthSlide.slice(0, widthSlide.length - 2) * (slideTo - 1);
+         offset = delNotDigits(widthSlide) * (slideTo - 1);
          slidesField.style.transform = `translateX(-${offset}px)`;
 
          changeOpacityDots();
