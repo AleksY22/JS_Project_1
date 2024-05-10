@@ -1,44 +1,54 @@
-function modal() {
-   //Modal
-   const modalOpenBtns = document.querySelectorAll('[data-modal');
-   const modal = document.querySelector('.modal');
+import { postData } from '../services/services';
 
-   function openModal() {
-      modal.classList.add('show');
-      modal.classList.remove('hide');
-      //modal.classList.toggle('show');
-      document.body.style.overflow = 'hidden';
+
+function openModal(modalSelector, modalTimer) {
+   const modal = document.querySelector(modalSelector);
+   modal.classList.add('show');
+   modal.classList.remove('hide');
+   //modal.classList.toggle('show');
+   document.body.style.overflow = 'hidden';
+   if (modalTimer) {
       clearInterval(modalTimer);
    }
+}
 
-   function closeModal() {
-      modal.classList.add('hide');
-      modal.classList.remove('show');
-      //modal.classList.toggle('show');
-      document.body.style.overflow = '';
-   }
+function closeModal(modalSelector) {
+   const modal = document.querySelector(modalSelector);
+   modal.classList.add('hide');
+   modal.classList.remove('show');
+   //modal.classList.toggle('show');
+   document.body.style.overflow = '';
+}
+
+
+function modal(triggerSelector, modalSelector, modalTimer) {
+   //Modal
+   const modalOpenBtns = document.querySelectorAll(triggerSelector);
+   const modal = document.querySelector(modalSelector);
+
+
 
    modalOpenBtns.forEach(btn => {
-      btn.addEventListener('click', openModal);
+      btn.addEventListener('click', () => openModal(modalSelector, modalTimer));
    });
 
    modal.addEventListener('click', (e) => {
       if (e.target === modal || e.target.getAttribute('data-close') == '') {
-         closeModal();
+         closeModal(modalSelector);
       }
    });
 
    document.addEventListener('keydown', (e) => {
       if (e.code === 'Escape' && modal.classList.contains('show')) {
-         closeModal();
+         closeModal(modalSelector);
       }
    });
 
-   const modalTimer = setTimeout(openModal, 5000);
+   //const modalTimer = setTimeout(openModal, 5000);
 
    function showModalByScroll() {
       if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight - 1) {
-         openModal();
+         openModal(modalSelector, modalTimer);
          window.removeEventListener('scroll', showModalByScroll);
       }
    }
@@ -48,6 +58,8 @@ function modal() {
 
 
    // Функция отправки формы
+
+   //функция отправки формы postData импортируется
 
    const forms = document.querySelectorAll('form');
    const message = {
@@ -60,17 +72,7 @@ function modal() {
       bindpostData(item);
    });
 
-   const postData = async (url, data) => {
-      const res = await fetch(url, {
-         method: 'POST',
-         headers: {
-            'Content-type': 'application/json'
-         },
-         body: data
-      });
 
-      return await res.json();
-   };
 
    function bindpostData(form) {
       form.addEventListener('submit', (e) => {
@@ -90,7 +92,7 @@ function modal() {
          //request.open('POST', 'server.php');
          //request.setRequestHeader('Content-type', 'application/json');
 
-         //отправка объекта formdata
+         // объект formdata
          const formData = new FormData(form);
 
 
@@ -108,6 +110,8 @@ function modal() {
                statusMessage.remove();
             }).catch(() => {
                showThanksModal(message.failure);
+               form.reset();
+               statusMessage.remove();
             }).finally(() => {
                form.reset();
             });
@@ -128,10 +132,10 @@ function modal() {
       });
    }
 
-   function showThanksModal(message) {
+   function showThanksModal(message, modalTimer) {
       const prevModalDialog = document.querySelector('.modal__dialog');
       prevModalDialog.classList.add('hide');
-      openModal();
+      openModal('.modal', modalTimer);
 
       const thanksModal = document.createElement('div');
       thanksModal.classList.add('modal__dialog');
@@ -147,15 +151,16 @@ function modal() {
          thanksModal.remove();
          prevModalDialog.classList.add('show');
          prevModalDialog.classList.remove('hide');
-         closeModal();
+         closeModal('.modal');
       }, 4000);
    }
 
 
    //Обращение к базе данных
-   fetch('http://localhost:3000/menu')
-      .then(data => data.json())
-      .then(res => console.log(res));
+   //fetch('http://localhost:3000/menu')
+   //.then(data => data.json())
+   //.then(res => console.log(res));
 }
 
-module.exports = modal;
+//export default modal;
+export { modal, openModal, closeModal };
